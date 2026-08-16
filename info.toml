@@ -1,0 +1,6 @@
+[script]
+name = "7mint"
+version = "0.0.1-beta"
+author = "pngmeow"
+dependencies = ["Eyoko1.lje-util"]
+binaries = ["lje-imgui"]
