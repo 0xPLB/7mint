@@ -1,42 +1,41 @@
-local HIDE_TIME = 5
-
-if (renderCaptureDetour) then
-    renderCaptureDetour:remove()
-    renderCaptureDetour = nil
+local function getFnAddr(fn)
+  return ffi.mem.unwrap_userdata(ffi.mem.upvalue(fn, 1))
 end
 
-collectgarbage("collect")
+local renderCapture = getFnAddr(render.Capture)
+renderCaptureDetour = ffi.detour.create(
+  renderCapture,
+  [[
+int (*original)(lua_State* L);
+int captureCounter = 0;
 
-local renderCapture = ffi.mem.unwrap_userdata(ffi.mem.upvalue(render.Capture, 1))
-local detour, err = ffi.detour.create(renderCapture, lje.env.read_script_file("detours/rendercapture.c"))
+int detour(lua_State* L) {
+  captureCounter++;
+  return original(L);
+}
+]]
+)
 
-if (not detour) then
-    mint.fn.error(string.format("render.Capture detour failed: %s", tostring(err)))
-    return
-end
+local captureCounterPtr = renderCaptureDetour:get("captureCounter")
+lje.con_printf("captureCounterPtr: 0x%X", captureCounterPtr or 0)
+ffi.mem.try_write_u32(captureCounterPtr, 0) -- Initialize counter to 0
 
-renderCaptureDetour = detour
+local HIDE_TIME = 5 -- seconds we keep considering ourselves captured after a call
 
-local counterPtr = detour:get("captureCounter")
-local lastCount = 0
+local lastCaptureCount = 0
 local lastCaptureTime = 0
+local function checkCapture()
+  local currentCount = ffi.mem.try_read_u32(captureCounterPtr)
+  if currentCount ~= nil and currentCount > lastCaptureCount then
+    lastCaptureCount = currentCount
+    lastCaptureTime = SysTime()
+  end
 
-mint.var.capture = false
-ffi.mem.try_write_u32(counterPtr, 0)
+  mint.var.capture = (SysTime() - lastCaptureTime) < HIDE_TIME
+end
 
-hook.pre("PostRender", "7mint/rendercapture", function()
-    local count = ffi.mem.try_read_u32(counterPtr) or 0
-
-    if (count > lastCount) then
-        lastCount = count
-        lastCaptureTime = SysTime()
-    end
-
-    mint.var.capture = (SysTime() - lastCaptureTime) < HIDE_TIME
-end)
+hook.pre("PostRender", "7mint/rendercapture", checkCapture)
 
 lje.env.on_cleanup(function()
-    hook.removepre("PostRender", "7mint/rendercapture")
-    detour:remove()
-    renderCaptureDetour = nil
+  hook.removepre("PostRender", "7mint/rendercapture")
 end)

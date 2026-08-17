@@ -3,11 +3,13 @@
 
 local mm = mint.mm
 
-hook.pre("lje-util/render", "OnRender2D", function()    
+hook.pre("lje-util/render", "OnRender2D", function()
+    if mint.var.capture then return end
     mm.Dispatch("OnRender2D")
 end)
 
 hook.pre("lje-util/render", "OnRender3D", function()
+    if mint.var.capture then return end
     cam.Start({type = "3D"})
     render.PushRenderTarget(lje.util.rendertarget)
 
