@@ -142,7 +142,7 @@ function bounding_module:OnRender2D()
 
         ---> Set per player, not once above the loop: the weapon below the box
         --- switches to the smaller font and every later name would inherit it.
-        surface.SetFont("small")
+        surface.SetFont(mint.fonts.small)
 
         local name = ply:Nick()
         local tw, th = surface.GetTextSize(name)
@@ -154,7 +154,7 @@ function bounding_module:OnRender2D()
         if wep then
             ---> Measured after the font switch, or the centring is off by whatever
             --- the two fonts differ by.
-            surface.SetFont("smaller")
+            surface.SetFont(mint.fonts.smaller)
             local ww = surface.GetTextSize(wep)
 
             surface.SetTextPos(x + math.floor((w - ww) * 0.5), y + h + 2)

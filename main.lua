@@ -1,7 +1,28 @@
 mint.var.state = mint.enums.states.MAIN
 
+local fonts = {}
+local fontdata = {}
+
+function mint.fn.font(name, data) --> 
+    local cached = fonts[name]
+    if (cached) then
+        return cached
+    end
+
+    local id = lje.util.random_string()
+    surface.CreateFont(id, data)
+    fonts[name] = id
+    fontdata[id] = data
+
+    return id
+end
+
+function mint.fn.fontdata(id)
+    return fontdata[id]
+end
+
 mint.materials = {
-    glow = CreateMaterial("ChamSelfIllumRim", "VertexLitGeneric", {
+    glow = CreateMaterial(lje.util.random_string(), "VertexLitGeneric", {
         ["$basetexture"] = "vgui/white_additive",
         ["$bumpmap"] = "vgui/white_additive",
         ["$model"] = "1",
@@ -17,13 +38,13 @@ mint.materials = {
 }
 
 mint.fonts = {
-    small = surface.CreateFont("small", {
+    small = mint.fn.font("small", {
         font = "Verdana",
         size = 13,
         antialias = false,
         outline = true
     }),
-    smaller = surface.CreateFont("smaller", {
+    smaller = mint.fn.font("smaller", {
         font = "Verdana",
         size = 12,
         antialias = false,
