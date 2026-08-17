@@ -32,11 +32,15 @@ mint.fonts = {
 }
 
 mint.fn.info("$#505050{Loading stuff into main}")
+mint.fn.include("detours/rendercapture.lua")
+
 mint.fn.include("util/hooks.lua")
+mint.fn.include("menu/cl_init.lua")
+
+
 
 ---> Re-include the module files over the descriptors boot registered. Register
 --- hands back the live instance, so whatever the menu toggled on survives and the
---- hooks re-attach against the client state. mint.mm.Reload() repeats this.
 mint.mm.Include()
 mint.mm.Load()
 

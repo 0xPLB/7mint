@@ -1,9 +1,13 @@
 local backdrop = {}
 local script_info = lje.script.info()
 local w, h = imgui.get_monitor_size()
+local surface 
+if lje.state.menu then
+    surface = lje.secure.pull("surface", lje.state.menu)
+else
+    surface = lje.secure.pull("surface", lje.state.client)
+end
 
-local surface = lje.secure.pull("surface", lje.state.menu)
-local Material = lje.secure.pull("Material", lje.state.menu)
 
 function backdrop.draw()
     if imgui.is_visible() then

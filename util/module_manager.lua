@@ -11,8 +11,8 @@ mm.cache   = {}               ---> hook name -> array of modules implementing it
 --- menu draws, and again from main for the logic. Add new modules here, not in
 --- boot.lua.
 mm.paths = {
-    "modules/misc/test.lua",
     "modules/visuals/chams.lua",
+    "modules/visuals/bounding.lua",
 }
 
 ---> Collects every module that implements `name`. Cached until the module set changes.

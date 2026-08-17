@@ -4,7 +4,8 @@
 
 mint = {
     var = {
-        state = 0
+        state = 0,
+        capture = 0
     },
     -- module manager
     mm = {
@@ -34,9 +35,6 @@ mint.enums.risk = {
     ["DETECTED"] = 2
 }
 
-
-
-
 function mint.fn.include(path)
     lje.con_printf("[$#7d25e8{7mint-include}] including %s", path)
     return lje.include(path)
@@ -44,12 +42,14 @@ end
 
 mint.fn.include("util/util.lua")
 
+---> Before module.lua: MODULE:config leans on mint.config.
+mint.fn.include("util/config.lua")
 mint.fn.include("util/module.lua")
 mint.fn.include("util/module_manager.lua")
 mint.fn.include("menu/init.lua")
 
 ---> Descriptors for the menu to draw and toggle. The hook bodies come along too,
---- but nothing dispatches them until main.lua is up.
+--- but nothing dispatches them until we are in the client state.
 mint.mm.Include()
 
 mint.fn.info("$$#7d25e8{7mint} by pngmeow")

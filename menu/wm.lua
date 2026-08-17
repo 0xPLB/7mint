@@ -2,6 +2,7 @@
 if mint.wm then return mint.wm end
 
 local wm = {}
+local config_widget = mint.fn.include("menu/widgets/config.lua")
 
 -- name -> { name, id }. Populated by the navbar, drained by wm.draw.
 wm.windows = {}
@@ -75,6 +76,12 @@ local function draw_subcategories(win)
                         module:Disable()
                     end
                 end
+
+                -- Config belongs to a running module, so it appears with the tick
+                -- and folds away again when the module is turned off.
+                if module.v.enabled then
+                    config_widget.draw(module)
+                end
             end
 
             imgui.unindent(8)
@@ -86,9 +93,7 @@ end
 function wm.draw()
     if imgui.is_visible() then
         for name, win in pairs(wm.windows) do
-            local _, open = imgui.begin_window("##" .. win.name .. win.id, true, 1)
-            imgui.text(win.name)
-            imgui.separator()
+            local _, open = imgui.begin_window(win.name, true)
             draw_subcategories(win)
             imgui.end_window()
             if not open then

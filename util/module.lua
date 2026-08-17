@@ -27,10 +27,58 @@ function MODULE:New(data)
     --- Set by mm.Load once the client state is up.
     meta.v.loaded = false
 
-    ---> config
+    ---> config: `fields` is what the menu draws, `c` is what the module reads.
+    --- Both are filled in by MODULE:config, which the file calls after Register.
+    meta.fields = data.fields or nil
     meta.c = data.c or nil
 
     return setmetatable(meta, self)
+end
+
+---> Declares the module's config.
+function MODULE:config(schema)
+    self.fields = mint.config.build(schema, self.id)
+    self.c = mint.config.values(self.fields, self.c)
+
+    return self.c
+end
+
+---> Channels of a colour field with its animation applied, ready to hand to
+--- surface.SetDrawColor. Reading self.c.<key> directly still gives the colour the
+--- user picked, which is the one to persist.
+function MODULE:Color(key)
+    return mint.config.animate(self.c and self.c[key])
+end
+
+---> Field descriptor by key, or nil when the module never declared it.
+function MODULE:GetField(key)
+    local fields = self.fields
+    if not fields then return end
+
+    for i = 1, #fields do
+        if fields[i].key == key then
+            return fields[i]
+        end
+    end
+end
+
+---> True when `option` is ticked in a dropdown_multiple field. That value is an
+--- array, so this saves every caller writing the same loop.
+function MODULE:HasOption(key, option)
+    local value = self.c and self.c[key]
+    if type(value) ~= "table" then return false end
+
+    for i = 1, #value do
+        if value[i] == option then return true end
+    end
+
+    return false
+end
+
+---> Puts every field back to its declared default.
+function MODULE:ResetConfig()
+    if not self.fields then return end
+    self.c = mint.config.values(self.fields, nil)
 end
 
 ---> Marks the module live. Called by mm.Load once the client state is up, never

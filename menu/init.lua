@@ -17,12 +17,11 @@ imgui.set_style({
 })
 
 lje.vm.add_pre_engine_call_hook(function(func, nargs, nresults, name, gm, ...)
-	if name == "DrawOverlay" then
-		imgui.new_frame()
-
-		navbar.draw()
-		wm.draw()
-		backdrop.draw()
-		imgui.render()
-	end
+    if name == "DrawOverlay" and not lje.state.client then
+        imgui.new_frame()
+        backdrop.draw()
+        navbar.draw()
+        wm.draw()
+        imgui.render()
+    end
 end, lje.state.menu)
