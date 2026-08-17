@@ -3,14 +3,8 @@
 
 local mm = mint.mm
 
-hook.pre("lje-util/render", "OnRender2D", function()
-    cam.Start2D()
-    render.PushRenderTarget(lje.util.rendertarget)
-    
+hook.pre("lje-util/render", "OnRender2D", function()    
     mm.Dispatch("OnRender2D")
-        
-    render.PopRenderTarget()
-    cam.End2D()
 end)
 
 hook.pre("lje-util/render", "OnRender3D", function()

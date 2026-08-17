@@ -17,17 +17,3 @@ hook.pre("lje-util/render", "menurender", function()
     imgui.render()
     ui.backdrop.draw()
 end)
-
--- THIS WILL RENDER.
-hook.pre("lje-util/render", "menurenxder", function()
-    cam.Start2D()
-    render.PushRenderTarget(lje.util.rendertarget)
-    surface.DrawRect(20, 20, 200, 200)
-    render.PopRenderTarget()
-    cam.End2D()
-end)
-
--- THIS WONT RENDER.
-hook.pre("lje-util/render", "TEST", function()
-    surface.DrawRect(400, 400, 200, 200)
-end)
